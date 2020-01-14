@@ -17,14 +17,12 @@ for rain_observation in rain:
         seattle_observations.append(rain_observation)
 
 #initialising a list of monhtly precipitation
-seattle_per_month = []
+seattle_per_month = [0] * 12
 
 # summing over the rain per month
-for month in range(1,13):
-    seattle_per_month.append(0)
-    for seattle_rain_observation in seattle_observations:
-        if seattle_rain_observation['date'].month == month:
-            seattle_per_month[month-1] += seattle_rain_observation['value']
+for seattle_rain_observation in seattle_observations:
+    month = seattle_rain_observation['date'].month
+    seattle_per_month[month-1] += seattle_rain_observation['value']
 
 seattle_total = sum(seattle_per_month)
 
@@ -34,6 +32,3 @@ seattle_per_month = [rain_per_month *100 / seattle_total for rain_per_month in s
 # reading it into a file 
 with open('Exercise2.json', 'w', encoding='utf8') as file:
     json.dump(seattle_per_month, file)
-
-# with open('file_name.json', 'w', encoding='utf8') as file:
-#     json.dump(some_data, file)
