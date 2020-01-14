@@ -27,7 +27,7 @@ for seattle_rain_observation in seattle_observations:
 seattle_total = sum(seattle_per_month)
 
 #calculating the percentage of total rain per month
-seattle_per_month = [rain_per_month *100 / seattle_total for rain_per_month in seattle_per_month]
+seattle_per_month = [rain_per_month / seattle_total for rain_per_month in seattle_per_month]
 
 # reading it into a file 
 with open('Exercise2.json', 'w', encoding='utf8') as file:
