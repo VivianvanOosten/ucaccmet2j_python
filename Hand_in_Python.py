@@ -16,17 +16,14 @@ for rain_observation in rain:
         rain_observation['date'] = rain_datetime.date()
         seattle_observations.append(rain_observation)
 
-seattle_rain_per_month = {}
+seattle_rain_per_month = []
 
 for month in range(1,13):
-    seattle_rain_per_month[month] = 0
+    seattle_rain_per_month.append(0)
+    print(seattle_rain_per_month)
     for seattle_rain_observation in seattle_observations:
         if seattle_rain_observation['date'].month == month:
-            seattle_rain_per_month[month] += seattle_rain_observation['value']
-
-seattle_total_rain = sum(seattle_rain_per_month.values())
-
-seattle_rain_per_month['Total'] = seattle_total_rain
+            seattle_rain_per_month[month-1] += seattle_rain_observation['value']
 
 with open('Exercise1.json', 'w', encoding='utf8') as file:
     json.dump(seattle_rain_per_month, file)
