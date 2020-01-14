@@ -16,6 +16,9 @@ with open('stations.csv') as file:
             'Station': row['Station']
         }
 
+#initialising our overall total amount of rain
+overall_total = 0
+
 for station in per_station:
     #initialising a list of station-specific-observations
     observations = []
@@ -36,14 +39,22 @@ for station in per_station:
         per_month[month-1] += rain_observation['value']
 
     total = sum(per_month)
+    overall_total += total
 
     #calculating the percentage of total rain per month
     per_month_relative = [rain_per_month / total for rain_per_month in per_month]
 
+    #Adding the calculated data to our dictionary
     per_station[station]["totalMonthlyPrecipitation"] = per_month
     per_station[station]["relativeMonthlyPrecipitation"] = per_month_relative
     per_station[station]["totalYearlyPrecipitation"] = total
 
+# Adding the relative yearly rain to the dictionary
+for station in per_station:
+    relative_yearly = per_station[station]["totalYearlyPrecipitation"] / overall_total
+    per_station[station]["relativeYearlyPrecipitation"] = relative_yearly
+    print(relative_yearly)
+
 # reading it into a file 
 with open('Exercise3.json', 'w', encoding='utf8') as file:
-    json.dump(per_month, file)
+    json.dump(per_station, file)
