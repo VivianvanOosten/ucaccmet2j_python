@@ -1,4 +1,5 @@
 import json
+import csv
 from datetime import datetime
 from datetime import date
 
@@ -6,29 +7,43 @@ from datetime import date
 with open('precipitation.json', encoding='utf8') as file:
     rain = json.load(file)
 
-#initialising a list of Seattle-observations
-seattle_observations = []
+with open('stations.csv') as file:
+    stations = csv.DictReader(file)
+    per_station = {}
+    for row in stations:
+        per_station[row['Location']] = {
+            'State': row['State'],
+            'Station': row['Station']
+        }
 
-#Changing the 'date' value into a datetime object to be able to access the months
-for rain_observation in rain:
-    if rain_observation['station'] == 'GHCND:US1WAKG0038':
-        rain_datetime = datetime.strptime(rain_observation['date'], '%Y-%m-%d')
-        rain_observation['date'] = rain_datetime.date()
-        seattle_observations.append(rain_observation)
+for station in per_station:
+    #initialising a list of station-specific-observations
+    observations = []
 
-#initialising a list of monhtly precipitation
-seattle_per_month = [0] * 12
+    #Changing the 'date' value into a datetime object to be able to access the months
+    for rain_observation in rain:
+        if rain_observation['station'] == per_station[station]['Station']:
+            rain_datetime = datetime.strptime(rain_observation['date'], '%Y-%m-%d')
+            rain_observation['date'] = rain_datetime.date()
+            observations.append(rain_observation)
 
-# summing over the rain per month
-for seattle_rain_observation in seattle_observations:
-    month = seattle_rain_observation['date'].month
-    seattle_per_month[month-1] += seattle_rain_observation['value']
+    #initialising a list of monhtly precipitation
+    per_month = [0] * 12
 
-seattle_total = sum(seattle_per_month)
+    # summing over the rain per month
+    for rain_observation in observations:
+        month = rain_observation['date'].month
+        per_month[month-1] += rain_observation['value']
 
-#calculating the percentage of total rain per month
-seattle_per_month = [rain_per_month / seattle_total for rain_per_month in seattle_per_month]
+    total = sum(per_month)
+
+    #calculating the percentage of total rain per month
+    per_month_relative = [rain_per_month / total for rain_per_month in per_month]
+
+    per_station[station]["totalMonthlyPrecipitation"] = per_month
+    per_station[station]["relativeMonthlyPrecipitation"] = per_month_relative
+    per_station[station]["totalYearlyPrecipitation"] = total
 
 # reading it into a file 
-with open('Exercise2.json', 'w', encoding='utf8') as file:
-    json.dump(seattle_per_month, file)
+with open('Exercise3.json', 'w', encoding='utf8') as file:
+    json.dump(per_month, file)
